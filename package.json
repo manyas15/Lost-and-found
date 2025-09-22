@@ -1,0 +1,29 @@
+{
+  "name": "lost-found",
+  "version": "1.0.0",
+  "description": "University Lost & Found website (Node + Express + EJS)",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "cli:add": "node cli/addItem.js",
+    "migrate": "node migrate.js",
+    "view-data": "node view-data.js",
+    "view-lost": "node view-data.js lost",
+    "view-found": "node view-data.js found",
+    "view-pending": "node view-data.js pending",
+    "admin": "node admin.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "mongoose": "^8.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

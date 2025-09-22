@@ -1,0 +1,25 @@
+<% const content = `
+<section class="container">
+  <a class="muted" href="/items">← Back to list</a>
+  <div class="detail">
+    <div class="info">
+      <span class="badge ${item.status}">${item.status.toUpperCase()}</span>
+      <h1>${item.itemName}</h1>
+      <p>${item.description || 'No description provided.'}</p>
+      <ul class="meta">
+        <li><strong>Category:</strong> ${item.category || 'other'}</li>
+        <li><strong>Location:</strong> ${item.location}</li>
+        <li><strong>Date:</strong> ${item.date}</li>
+        ${typeof item.isDayScholar === 'boolean' ? `<li><strong>Day Scholar:</strong> ${item.isDayScholar ? 'Yes' : 'No'}</li>` : ''}
+        ${item.keeperInfo ? `<li><strong>Keeper Info:</strong> ${item.keeperInfo}</li>` : ''}
+      </ul>
+      <div class="contact">
+        <h3>Contact</h3>
+        <p><strong>Name:</strong> ${item.contactName || 'N/A'}</p>
+        <p><strong>Email:</strong> <a href="mailto:${item.contactEmail}">${item.contactEmail}</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>

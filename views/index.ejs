@@ -1,0 +1,31 @@
+<% const content = `
+<section class="hero">
+  <div class="container">
+    <h1>University Lost & Found</h1>
+    <p>If you lost something on campus, check here first. If you found something, help it get back to its owner.</p>
+    <div class="cta">
+      <a class="btn" href="/items">Browse All</a>
+      <a class="btn secondary" href="/report">Report Lost</a>
+      <a class="btn secondary" href="/found">Report Found</a>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <h2>Latest items</h2>
+  <div class="grid">
+    ${latest.map(i => `
+      <a class="card" href="/items/${i.id}">
+        <div class="placeholder">Item Image</div>
+        <div class="card-body">
+          <span class="badge ${i.status}">${i.status.toUpperCase()}</span>
+          <h3>${i.itemName}</h3>
+          <p class="muted">${i.category || 'other'} • ${i.location}</p>
+          <p class="muted">Date: ${i.date}</p>
+        </div>
+      </a>
+    `).join('')}
+  </div>
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>

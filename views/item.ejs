@@ -1,0 +1,84 @@
+<% const content = `
+<section class="container">
+  <a class="muted" href="/items" style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; color: var(--primary); text-decoration: none;">
+    ← Back to list
+  </a>
+  
+  <div class="detail">
+    <div class="placeholder lg">
+      📦 Item Image
+    </div>
+    
+    <div class="info">
+      <span class="badge ${item.status}">${item.status.toUpperCase()}</span>
+      <h1>${item.itemName}</h1>
+      <p style="font-size: 1.1rem; line-height: 1.6; margin: 1rem 0;">
+        ${item.description || 'No description provided.'}
+      </p>
+      
+      <div style="background: var(--bg-tertiary); padding: 1.5rem; border-radius: 0.75rem; margin: 1.5rem 0;">
+        <h3 style="color: var(--primary); margin-bottom: 1rem;">📍 Item Details</h3>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin: 0.75rem 0; display: flex; gap: 1rem;">
+            <strong style="min-width: 100px; color: var(--text-secondary);">Category:</strong> 
+            <span>${item.category || 'other'}</span>
+          </li>
+          <li style="margin: 0.75rem 0; display: flex; gap: 1rem;">
+            <strong style="min-width: 100px; color: var(--text-secondary);">Location:</strong> 
+            <span>${item.location}</span>
+          </li>
+          <li style="margin: 0.75rem 0; display: flex; gap: 1rem;">
+            <strong style="min-width: 100px; color: var(--text-secondary);">Date:</strong> 
+            <span>${item.date}</span>
+          </li>
+          ${typeof item.isDayScholar === 'boolean' ? `
+          <li style="margin: 0.75rem 0; display: flex; gap: 1rem;">
+            <strong style="min-width: 100px; color: var(--text-secondary);">Day Scholar:</strong> 
+            <span>${item.isDayScholar ? 'Yes' : 'No'}</span>
+          </li>
+          ` : ''}
+          ${item.keeperInfo ? `
+          <li style="margin: 0.75rem 0; display: flex; gap: 1rem;">
+            <strong style="min-width: 100px; color: var(--text-secondary);">Keeper Info:</strong> 
+            <span>${item.keeperInfo}</span>
+          </li>
+          ` : ''}
+        </ul>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 1.5rem; border-radius: 0.75rem; margin: 1.5rem 0;">
+        <h3 style="color: white; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          📞 Contact Information
+        </h3>
+        <p style="margin: 0.5rem 0;">
+          <strong>Name:</strong> ${item.contactName || 'Not provided'}
+        </p>
+        <p style="margin: 0.5rem 0;">
+          <strong>Email:</strong> 
+          <a href="mailto:${item.contactEmail}" 
+             data-email="${item.contactEmail}"
+             style="color: white; text-decoration: underline; font-weight: 500;">
+            ${item.contactEmail}
+          </a>
+        </p>
+        <p style="font-size: 0.9rem; opacity: 0.9; margin-top: 1rem;">
+          💡 Click the email to copy it to your clipboard
+        </p>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+        <a href="mailto:${item.contactEmail}?subject=Regarding ${item.status} item: ${item.itemName}" 
+           class="btn primary sparkle">
+          📧 Send Email
+        </a>
+        ${item.status === 'found' ? `
+          <a href="/report" class="btn secondary">🔍 Report Similar Lost Item</a>
+        ` : `
+          <a href="/found" class="btn secondary">✨ Report Similar Found Item</a>
+        `}
+      </div>
+    </div>
+  </div>
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>

@@ -1,0 +1,26 @@
+<% const content = `
+<section class="container">
+  <h1>Report Lost Item</h1>
+  <form class="form" method="post" action="/report">
+    <div class="row">
+      <label>Item Name* <input name="itemName" required/></label>
+      <label>Category <input name="category" placeholder="e.g., Electronics, ID Card"/></label>
+    </div>
+    <label>Description <textarea name="description" rows="4" placeholder="Color, brand, unique marks..."></textarea></label>
+    <div class="row">
+      <label>Location Lost* <input name="location" required placeholder="Where did you lose it?"/></label>
+      <label>Date Lost* <input type="date" name="dateLost" required/></label>
+    </div>
+    
+    <div class="row">
+      <label>Your Name <input name="contactName"/></label>
+      <label>Contact Email* <input type="email" name="contactEmail" required/></label>
+    </div>
+    <label class="checkbox">
+      <input type="checkbox" name="isDayScholar"/> I am a day scholar
+    </label>
+    <button class="btn" type="submit">Submit Lost Report</button>
+  </form>
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>

@@ -1,0 +1,42 @@
+<% const content = `
+<section class="container">
+  <h1>All Items</h1>
+
+  <form class="search" method="get" action="/items">
+    <input type="text" name="q" id="q" placeholder="Search by name, location, category..." value="${q || ''}"/>
+    <button class="btn primary" type="submit">Search</button>
+  </form>
+
+  <div id="clientFilter" class="muted" style="margin-bottom: 2rem;">💡 Tip: You can also filter live on this page—just start typing above.</div>
+
+  <div class="grid" id="itemsGrid">
+    ${items.map(i => `
+      <a class="card filterable" href="/items/${i.id}" data-text="${[
+        i.itemName, i.location, i.category, i.status, i.description
+      ].filter(Boolean).join(' ').toLowerCase()}">
+        <div class="placeholder">📦 Item Image</div>
+        <div class="card-body">
+          <span class="badge ${i.status}">${i.status.toUpperCase()}</span>
+          <h3>${i.itemName}</h3>
+          <p class="muted">${i.category || 'other'} • ${i.location}</p>
+          <p class="muted">Date: ${i.date}</p>
+          <p class="muted" data-email="${i.contactEmail}" style="cursor: pointer; color: var(--primary);" title="Click to copy email">📧 ${i.contactEmail}</p>
+        </div>
+      </a>
+    `).join('')}
+  </div>
+
+  ${items.length === 0 ? `
+    <div class="text-center" style="padding: 3rem; color: var(--text-muted);">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+      <h3>No items found</h3>
+      <p>Be the first to report a lost or found item!</p>
+      <div style="margin-top: 2rem;">
+        <a href="/report" class="btn primary">Report Lost Item</a>
+        <a href="/found" class="btn secondary">Report Found Item</a>
+      </div>
+    </div>
+  ` : ``}
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>
