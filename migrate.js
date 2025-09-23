@@ -30,25 +30,25 @@ async function migrateData() {
     // Check if data already exists
     const existingCount = await Item.countDocuments();
     if (existingCount > 0) {
-      console.log(`📋 Found ${existingCount} existing items in MongoDB`);
+      console.log(`Found ${existingCount} existing items in MongoDB`);
       const answer = await askUser('Do you want to clear existing data and migrate? (y/n): ');
       if (answer.toLowerCase() !== 'y') {
-        console.log('❌ Migration cancelled');
+        console.log(' Migration cancelled');
         process.exit(0);
       }
       await Item.deleteMany({});
-      console.log('🗑️ Cleared existing data');
+      console.log('Cleared existing data');
     }
 
     // Read JSON file
     const jsonPath = path.join(__dirname, 'data', 'items.json');
     if (!fs.existsSync(jsonPath)) {
-      console.log('❌ No items.json file found');
+      console.log(' No items.json file found');
       process.exit(1);
     }
 
     const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    console.log(`📁 Found ${jsonData.length} items in JSON file`);
+    console.log(`Found ${jsonData.length} items in JSON file`);
 
     // Transform and insert data
     const transformedItems = jsonData.map(item => ({
@@ -73,15 +73,15 @@ async function migrateData() {
     // Create backup of JSON file
     const backupPath = path.join(__dirname, 'data', `items_backup_${Date.now()}.json`);
     fs.copyFileSync(jsonPath, backupPath);
-    console.log(`💾 Created backup at ${backupPath}`);
+    console.log(`Created backup at ${backupPath}`);
 
-    console.log('🎉 Migration completed successfully!');
+    console.log(' Migration completed successfully!');
     
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    console.error(' Migration failed:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('👋 Disconnected from MongoDB');
+    console.log(' Disconnected from MongoDB');
   }
 }
 

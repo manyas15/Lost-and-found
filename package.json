@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "cli:add": "node cli/addItem.js",
     "migrate": "node migrate.js",
     "view-data": "node view-data.js",
     "view-lost": "node view-data.js lost",

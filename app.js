@@ -86,6 +86,6 @@ process.on('unhandledRejection', (reason) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Lost & Found running at http://localhost:${PORT}`);
+  console.log(` Lost & Found running at http://localhost:${PORT}`);
 });
 
