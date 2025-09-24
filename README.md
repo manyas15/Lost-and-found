@@ -10,10 +10,12 @@ A modern, responsive web application for managing lost and found items on univer
 - **📝 Report Lost Items**: Submit detailed reports for lost belongings
 - **✨ Report Found Items**: Help others by reporting found items
 - **📧 Contact System**: Direct email communication between finders and losers
-- **🎨 Modern UI**: Beautiful, responsive design with smooth animations
-- **📱 Mobile Friendly**: Fully responsive across all devices
+- **� Dual Theme System**: Toggle between elegant light (beige/sand) and dark (purple-green) themes
+- **�🎨 Modern UI**: Beautiful, responsive design with smooth animations and gradient effects
+- **📱 Mobile Friendly**: Fully responsive across all devices with optimized mobile experience
 - **🔒 Data Persistence**: MongoDB integration for reliable data storage
 - **⚡ Real-time Search**: Live filtering without page reloads
+- **💾 Theme Persistence**: User theme preferences saved automatically
 - **🛠️ Admin Panel**: Command-line tools for data management
 
 ## 🚀 Quick Start
@@ -96,13 +98,38 @@ lost-found/
 
 ## 🎨 Design Features
 
-- **Modern CSS Grid & Flexbox**: Responsive layouts
-- **CSS Custom Properties**: Consistent theming
-- **Smooth Animations**: Fade-in effects and hover states
-- **Google Fonts**: Professional typography with Inter font
-- **Gradient Backgrounds**: Beautiful hero sections
-- **Interactive Elements**: Hover effects and loading states
-- **Accessibility**: Proper focus states and semantic HTML
+- **🌓 Dual Theme System**: 
+  - **Light Theme**: Elegant beige, sand, and French beige color palette
+  - **Dark Theme**: Sophisticated purple-green gradient design
+  - **Smart Toggle**: Sun/moon emoji button with localStorage persistence
+- **Modern CSS Grid & Flexbox**: Responsive layouts with advanced positioning
+- **CSS Custom Properties**: Dynamic theming with smooth color transitions
+- **Smooth Animations**: Fade-in effects, hover states, and theme switching transitions
+- **Professional Typography**: Google Fonts (Inter) with optimized readability
+- **Dynamic Gradients**: Beautiful hero sections with theme-aware color schemes
+- **Interactive Elements**: Enhanced hover effects, loading states, and visual feedback
+- **Accessibility**: Proper focus states, semantic HTML, and high contrast ratios
+- **Mobile Optimization**: Touch-friendly interface with responsive breakpoints
+
+## 🌓 Theme System
+
+### Theme Options
+- **🌞 Light Theme**: Elegant beige, sand, and French beige palette
+  - Warm, welcoming colors perfect for daytime use
+  - High contrast text for excellent readability
+  - Soft gradients and subtle shadows
+
+- **🌙 Dark Theme**: Sophisticated purple-green gradient design
+  - Modern dark interface reduces eye strain
+  - Vibrant accent colors with professional appearance
+  - Perfect for evening use or low-light environments
+
+### Theme Features
+- **Smart Toggle Button**: Sun/moon emoji indicator in navigation
+- **Persistent Preferences**: Theme choice saved automatically
+- **Smooth Transitions**: Seamless switching between themes
+- **System Integration**: Respects user's preferred color scheme
+- **Mobile Optimized**: Consistent experience across all devices
 
 ## 🛠️ Technologies Used
 
@@ -115,10 +142,11 @@ lost-found/
 - **dotenv** - Environment variables
 
 ### Frontend
-- **Vanilla JavaScript** - Interactive features
-- **CSS3** - Modern styling with custom properties
-- **Google Fonts** - Typography
-- **Responsive Design** - Mobile-first approach
+- **Vanilla JavaScript** - Interactive features and theme management
+- **CSS3** - Modern styling with custom properties and dual-theme system
+- **Theme Toggle System** - Dynamic theme switching with localStorage
+- **Google Fonts** - Typography optimization
+- **Responsive Design** - Mobile-first approach with advanced layouts
 
 ## 📊 Database Schema
 
@@ -190,14 +218,17 @@ npm run migrate
 
 ## 🎯 Future Enhancements
 
-- [ ] Image upload for items
-- [ ] User authentication system
-- [ ] Email notifications
-- [ ] Advanced search filters
-- [ ] Mobile app version
-- [ ] Admin web dashboard
-- [ ] Item expiration system
-- [ ] Statistics dashboard
+- [ ] Image upload for items with preview functionality
+- [ ] User authentication system with profiles
+- [ ] Email notifications for matched items
+- [ ] Advanced search filters and sorting options
+- [ ] Mobile app version with push notifications
+- [ ] Admin web dashboard with analytics
+- [ ] Item expiration system with automatic cleanup
+- [ ] Statistics dashboard with visual charts
+- [ ] Multi-language support
+- [ ] Additional theme options and customization
+- [ ] Item matching algorithm based on descriptions
 
 ## 🤝 Contributing
 
@@ -213,24 +244,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+**Manyas15**
+- GitHub: [@manyas15](https://github.com/manyas15)
+- Repository: [Lost-and-found](https://github.com/manyas15/Lost-and-found)
 
 ## 🙏 Acknowledgments
 
-- University for the project requirements
-- MongoDB community for excellent documentation
-- Express.js team for the robust framework
-- Open source community for inspiration
+- University for the project requirements and academic support
+- MongoDB community for excellent documentation and tutorials
+- Express.js team for the robust and flexible framework
+- Open source community for inspiration and best practices
+- CSS and JavaScript communities for modern web development techniques
 
 ---
 
 ### 📞 Support
 
 If you encounter any issues or have questions, please:
-1. Check the [Issues](https://github.com/yourusername/lost-found/issues) page
-2. Create a new issue with detailed information
-3. Contact the development team
+1. Check the [Issues](https://github.com/manyas15/Lost-and-found/issues) page
+2. Create a new issue with detailed information about the problem
+3. Contact the development team through GitHub discussions
+4. Review the documentation and troubleshooting guides
 
-**Made with ❤️ for university students**
+**Made with ❤️ for university students by Manyas15**
