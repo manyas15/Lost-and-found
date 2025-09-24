@@ -4,6 +4,51 @@ console.log('🚀 Lost & Found JavaScript loaded successfully!');
 // Smooth scroll behavior
 document.documentElement.style.scrollBehavior = 'smooth';
 
+// Theme Management
+function initThemeToggle() {
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  const body = document.body;
+  
+  if (!themeToggle || !themeIcon) {
+    console.log('Theme toggle elements not found');
+    return;
+  }
+
+  // Load saved theme or default to dark
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  body.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+
+  console.log('✅ Theme system initialized with:', savedTheme);
+
+  // Theme toggle event listener
+  themeToggle.addEventListener('click', function() {
+    const currentTheme = body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    
+    console.log('🎨 Theme changed to:', newTheme);
+    
+    // Add a nice animation effect
+    themeToggle.style.transform = 'scale(0.8)';
+    setTimeout(() => {
+      themeToggle.style.transform = 'scale(1)';
+    }, 150);
+  });
+
+  function updateThemeIcon(theme) {
+    if (theme === 'dark') {
+      themeIcon.textContent = '☀️'; // Sun for switching to light
+    } else {
+      themeIcon.textContent = '🌙'; // Moon for switching to dark
+    }
+  }
+}
+
 // Simple search functionality (legacy support)
 function initBasicSearch() {
   const q = document.getElementById('q');
@@ -118,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('🎯 Initializing Lost & Found features...');
   
   try {
+    initThemeToggle();
     initBasicSearch();
     addLoadingStates();
     enhanceCardInteractions();

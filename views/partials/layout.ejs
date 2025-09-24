@@ -10,7 +10,14 @@
   <meta name="description" content="University Lost & Found - Help students reunite with their belongings">
   <meta name="keywords" content="lost, found, university, student, belongings">
 </head>
-<body>
+<body data-theme="dark">
+  <!-- Theme Toggle Button -->
+  <div class="theme-toggle">
+    <button id="themeToggle" class="theme-btn">
+      <span id="themeIcon">☀️</span>
+    </button>
+  </div>
+  
   <%- include('navbar') %>
   <main>
     <%- content %>
