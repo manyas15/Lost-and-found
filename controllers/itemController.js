@@ -27,7 +27,8 @@ async function getItem(req, res, next) {
       title: 'Item Not Found',
       content: `<div class="container"><h2>Item not found</h2><p>It might have been removed.</p></div>`
     });
-    res.render('item', { title: item.itemName, item });
+    const viewItem = { ...item, id: (item._id || item.id).toString() };
+    res.render('item', { title: item.itemName, item: viewItem });
   } catch (err) { next(err); }
 }
 

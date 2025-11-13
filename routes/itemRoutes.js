@@ -6,16 +6,17 @@ const {
   getReportLost, getReportFound,
   postReportLost, postReportFound
 } = require('../controllers/itemController');
+const { requireAuth } = require('../middleware/authMiddleware');
 
-router.get('/', getHome);
+router.get('/', requireAuth, getHome);
 
-router.get('/items', getItems);
-router.get('/items/:id', getItem);
+router.get('/items', requireAuth, getItems);
+router.get('/items/:id', requireAuth, getItem);
 
-router.get('/report', getReportLost);
-router.post('/report', postReportLost);
+router.get('/report', requireAuth, getReportLost);
+router.post('/report', requireAuth, postReportLost);
 
-router.get('/found', getReportFound);
-router.post('/found', postReportFound);
+router.get('/found', requireAuth, getReportFound);
+router.post('/found', requireAuth, postReportFound);
 
 module.exports = router;

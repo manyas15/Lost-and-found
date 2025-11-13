@@ -1,0 +1,20 @@
+<% const content = `
+<section class="container">
+  <h1>Welcome back</h1>
+  <p class="muted">Log in to report lost or found items.</p>
+  <form class="form narrow" method="post" action="/auth/login">
+    <input type="hidden" name="next" value="${next || ''}"/>
+    ${error ? `<div class="alert">${error}</div>` : ''}
+    <label>Email*
+      <input type="email" name="email" required value="${form.email || ''}" placeholder="name@example.com"/>
+    </label>
+    <label>Password*
+      <input type="password" name="password" required placeholder="Your password"/>
+    </label>
+    <button class="btn" type="submit">Log In</button>
+    <p class="muted">Don't have an account? <a href="/auth/signup${next ? `?next=${encodeURIComponent(next)}` : ''}">Create one</a></p>
+  </form>
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>
+

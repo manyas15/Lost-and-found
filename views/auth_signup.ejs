@@ -1,0 +1,26 @@
+<% const content = `
+<section class="container">
+  <h1>Create your account</h1>
+  <p class="muted">Save your details once and submit reports faster.</p>
+  <form class="form narrow" method="post" action="/auth/signup">
+    <input type="hidden" name="next" value="${next || ''}"/>
+    ${error ? `<div class="alert">${error}</div>` : ''}
+    <label>Name*
+      <input name="name" required value="${form.name || ''}" placeholder="Your name"/>
+    </label>
+    <label>Email*
+      <input type="email" name="email" required value="${form.email || ''}" placeholder="name@example.com"/>
+    </label>
+    <label>Password*
+      <input type="password" name="password" required placeholder="At least 6 characters"/>
+    </label>
+    <label>Confirm Password*
+      <input type="password" name="confirmPassword" required placeholder="Re-type your password"/>
+    </label>
+    <button class="btn" type="submit">Sign Up</button>
+    <p class="muted">Already have an account? <a href="/auth/login${next ? `?next=${encodeURIComponent(next)}` : ''}">Log in</a></p>
+  </form>
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>
+

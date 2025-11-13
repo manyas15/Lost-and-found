@@ -1,8 +1,10 @@
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
-const app = express();
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const { attachUser } = require('./middleware/authMiddleware');
+const app = express();
 
 // Serve static files from the "public" folder
 app.use(express.static('public'));
@@ -14,6 +16,8 @@ app.set('views', path.join(__dirname, 'views'));
 // Body parsers
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
+app.use(attachUser);
 
 // MongoDB
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/lost_found';
@@ -25,7 +29,9 @@ mongoose.connect(MONGO_URI).then(() => {
 
 // Routes
 const itemRoutes = require('./routes/itemRoutes');
+const authRoutes = require('./routes/authRoutes');
 app.use('/', itemRoutes);
+app.use('/auth', authRoutes);
 
 // 404
 app.use((req, res) => {

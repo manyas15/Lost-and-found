@@ -1,10 +1,23 @@
 <header class="nav">
   <div class="nav-inner container">
     <a class="brand" href="/">Lost & Found</a>
-    <nav>
-      <a href="/items">Browse Items</a>
-      <a href="/report">Report Lost</a>
-      <a href="/found">Report Found</a>
-    </nav>
+    <% if (currentUser) { %>
+      <nav>
+        <a href="/items">Browse Items</a>
+        <a href="/report">Report Lost</a>
+        <a href="/found">Report Found</a>
+      </nav>
+    <% } %>
+    <div class="nav-actions">
+      <% if (currentUser) { %>
+        <span class="nav-user">Hi, <%= currentUser.name.split(' ')[0] %></span>
+        <form method="post" action="/auth/logout">
+          <button class="btn secondary small" type="submit">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/auth/login" class="btn ghost small">Log in</a>
+        <a href="/auth/signup" class="btn small">Sign up</a>
+      <% } %>
+    </div>
   </div>
 </header>

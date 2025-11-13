@@ -1,22 +1,31 @@
 # 🎓 University Lost & Found System
 
-A modern, responsive web application for managing lost and found items on university campuses. Built with Node.js, Express, MongoDB, and EJS templating.
+A modern, responsive web application for managing lost and found items on university campuses. Built with Node.js, Express, MongoDB, EJS templating, and secured with JWT authentication.
 
 ![Lost & Found Hero](https://img.shields.io/badge/Status-Active-brightgreen) ![Node.js](https://img.shields.io/badge/Node.js-v18+-green) ![MongoDB](https://img.shields.io/badge/MongoDB-v6+-green)
 
 ## ✨ Features
 
+- **🔐 Authentication First**: JWT-based login/signup flow protects every page by default
+- **👤 Personal Accounts**: Users submit and manage reports under their own profile
 - **🔍 Browse Items**: View all lost and found items with search functionality
 - **📝 Report Lost Items**: Submit detailed reports for lost belongings
 - **✨ Report Found Items**: Help others by reporting found items
 - **📧 Contact System**: Direct email communication between finders and losers
-- **� Dual Theme System**: Toggle between elegant light (beige/sand) and dark (purple-green) themes
-- **�🎨 Modern UI**: Beautiful, responsive design with smooth animations and gradient effects
+- **🌓 Dual Theme System**: Toggle between elegant light (beige/sand) and dark (purple-green) themes
+- **🎨 Modern UI**: Beautiful, responsive design with smooth animations and gradient effects
 - **📱 Mobile Friendly**: Fully responsive across all devices with optimized mobile experience
 - **🔒 Data Persistence**: MongoDB integration for reliable data storage
 - **⚡ Real-time Search**: Live filtering without page reloads
 - **💾 Theme Persistence**: User theme preferences saved automatically
 - **🛠️ Admin Panel**: Command-line tools for data management
+
+## 🔐 Authentication Overview
+
+- Visitors are redirected to the login screen before accessing any page.
+- Signup and login issue HTTP-only JWT cookies for secure sessions.
+- After authenticating, users are taken back to the page they originally requested.
+- Navbar updates to show browse/report shortcuts and logout controls once signed in.
 
 ## 🚀 Quick Start
 
@@ -41,7 +50,7 @@ A modern, responsive web application for managing lost and found items on univer
 3. **Set up environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env with your MongoDB connection string
+   # Edit .env with your MongoDB connection string and JWT secret
    ```
 
 4. **Start MongoDB service**
@@ -55,11 +64,14 @@ A modern, responsive web application for managing lost and found items on univer
 
 5. **Run the application**
    ```bash
-   npm start
+   npm run dev
    ```
 
 6. **Open your browser**
    Navigate to `http://localhost:3000`
+
+7. **Create an account**
+   Sign up on the login page to access the dashboard and submit reports.
 
 ## 📦 Available Scripts
 
@@ -84,7 +96,9 @@ lost-found/
 │   ├── items.ejs       # Items listing
 │   ├── item.ejs        # Item details
 │   ├── form_lost.ejs   # Lost item form
-│   └── form_found.ejs  # Found item form
+│   ├── form_found.ejs  # Found item form
+│   ├── auth_login.ejs  # Login screen
+│   └── auth_signup.ejs # Signup screen
 ├── 📁 routes/          # Express routes
 ├── 📁 controllers/     # Route handlers
 ├── 📁 models/          # MongoDB models
@@ -139,6 +153,9 @@ lost-found/
 - **MongoDB** - Database
 - **Mongoose** - MongoDB ODM
 - **EJS** - Templating engine
+- **jsonwebtoken** - Stateless authentication tokens
+- **bcryptjs** - Password hashing
+- **cookie-parser** - HTTP-only JWT cookies
 - **dotenv** - Environment variables
 
 ### Frontend
@@ -169,6 +186,17 @@ lost-found/
 }
 ```
 
+### User Model
+```javascript
+{
+  name: String,             // Full name
+  email: String,            // Unique, lowercased email
+  password: String,         // Bcrypt-hashed password
+  createdAt: Date,          // Auto-generated timestamp
+  updatedAt: Date           // Auto-generated timestamp
+}
+```
+
 ## 🔧 Configuration
 
 ### Environment Variables (.env)
@@ -177,19 +205,29 @@ lost-found/
 MONGO_URI=mongodb://127.0.0.1:27017/lost_found
 PORT=3000
 
+# Authentication
+JWT_SECRET=super-secret-string-change-me
+
 # For production with MongoDB Atlas:
 # MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/lost_found
 ```
 
 ## 📝 API Endpoints
 
-- `GET /` - Homepage with latest items
-- `GET /items` - Browse all items with search
-- `GET /items/:id` - View item details
-- `GET /report` - Lost item form
-- `POST /report` - Submit lost item
-- `GET /found` - Found item form
-- `POST /found` - Submit found item
+> All primary application routes are protected; unauthenticated visitors are redirected to `/auth/login`.
+
+- `GET /auth/login` – Render login page
+- `POST /auth/login` – Authenticate user and issue JWT cookie
+- `GET /auth/signup` – Render signup page
+- `POST /auth/signup` – Create user with hashed password
+- `POST /auth/logout` – Clear session cookie
+- `GET /` – Homepage with latest items (requires login)
+- `GET /items` – Browse all items with search (requires login)
+- `GET /items/:id` – View item details (requires login)
+- `GET /report` – Lost item form (requires login)
+- `POST /report` – Submit lost item (requires login)
+- `GET /found` – Found item form (requires login)
+- `POST /found` – Submit found item (requires login)
 
 ## 🚀 Deployment
 
@@ -213,13 +251,16 @@ npm run migrate
 
 - Input validation on all forms
 - MongoDB injection protection via Mongoose
+- Bcrypt hashing for stored passwords
+- HTTP-only JWT cookies with short-lived tokens
+- Protected routes that enforce login-first navigation
 - Environment variable protection
 - Error handling with graceful fallbacks
 
 ## 🎯 Future Enhancements
 
 - [ ] Image upload for items with preview functionality
-- [ ] User authentication system with profiles
+- [ ] User profile customization (avatars, contact preferences)
 - [ ] Email notifications for matched items
 - [ ] Advanced search filters and sorting options
 - [ ] Mobile app version with push notifications
