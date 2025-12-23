@@ -1,0 +1,18 @@
+<% const content = `
+<section class="container">
+  <h1>Verify Your Email</h1>
+  <p class="muted">Enter the 6-digit code we sent to <strong>${form.email || ''}</strong>.</p>
+  <form class="form narrow" method="post" action="/auth/verify-otp">
+    <input type="hidden" name="email" value="${form.email || ''}"/>
+    <input type="hidden" name="next" value="${next || ''}"/>
+    ${error ? `<div class="alert">${error}</div>` : ''}
+    ${info ? `<div class="info">${info}</div>` : ''}
+    <label>Verification Code*
+      <input type="text" name="code" maxlength="6" minlength="6" pattern="\\d{6}" required placeholder="123456"/>
+    </label>
+    <button class="btn" type="submit">Verify & Continue</button>
+    <p class="muted" style="margin-top: 1rem;">Didn\'t receive the code? Try again by logging in or signing up.</p>
+  </form>
+</section>
+` %>
+<%- include('partials/layout', { title, content }) %>

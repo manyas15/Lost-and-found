@@ -11,13 +11,14 @@ const itemSchema = new mongoose.Schema({
   contactEmail: { type: String, required: true },
   isDayScholar: { type: Boolean, default: undefined },
   keeperInfo: { type: String, default: undefined },
-  resolved: { type: Boolean, default: false }
+  resolved: { type: Boolean, default: false },
+  imageUrl: { type: String, default: undefined }
 }, { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });
 
 const Item = mongoose.model('Item', itemSchema);
 
 async function readAll() {
-  return Item.find().sort({ createdAt: -1 }).lean();
+  return Item.find({ imageUrl: { $exists: true, $ne: null, $ne: '' } }).sort({ createdAt: -1 }).lean();
 }
 
 async function addItem(item) {
@@ -30,10 +31,16 @@ async function getById(id) {
 }
 
 async function search(query) {
-  if (!query) return readAll();
+  const baseFilter = { imageUrl: { $exists: true, $ne: null, $ne: '' } };
+  
+  if (!query) {
+    return Item.find(baseFilter).sort({ createdAt: -1 }).lean();
+  }
+  
   const q = String(query).trim();
   const regex = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
   return Item.find({
+    ...baseFilter,
     $or: [
       { itemName: regex },
       { description: regex },

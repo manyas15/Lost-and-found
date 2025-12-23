@@ -23,9 +23,9 @@ async function getItem(req, res, next) {
   try {
     const { id } = req.params;
     const item = await getById(id);
-    if (!item) return res.status(404).render('partials/layout', {
+    if (!item || !item.imageUrl) return res.status(404).render('partials/layout', {
       title: 'Item Not Found',
-      content: `<div class="container"><h2>Item not found</h2><p>It might have been removed.</p></div>`
+      content: `<div class="container"><h2>Item not found</h2><p>It might have been removed or doesn't have an image.</p><a href="/items" class="btn primary">Back to Items</a></div>`
     });
     const viewItem = { ...item, id: (item._id || item.id).toString() };
     res.render('item', { title: item.itemName, item: viewItem });
@@ -55,6 +55,16 @@ async function postReportLost(req, res, next) {
       });
     }
 
+    // Handle image upload - required
+    if (!req.file) {
+      return res.status(400).render('partials/layout', {
+        title: 'Missing Image',
+        content: `<div class="container"><h2>Image Required</h2><p>Please upload an image of the lost item.</p><a href="/report" class="btn primary">Go Back</a></div>`
+      });
+    }
+
+    const imageUrl = '/uploads/' + req.file.filename;
+
     const item = {
       status: 'lost',
       itemName,
@@ -65,7 +75,8 @@ async function postReportLost(req, res, next) {
       contactName: contactName || '',
       contactEmail,
       isDayScholar: Boolean(isDayScholar),
-      resolved: false
+      resolved: false,
+      imageUrl
     };
 
     await addItem(item);
@@ -87,6 +98,16 @@ async function postReportFound(req, res, next) {
       });
     }
 
+    // Handle image upload - required
+    if (!req.file) {
+      return res.status(400).render('partials/layout', {
+        title: 'Missing Image',
+        content: `<div class="container"><h2>Image Required</h2><p>Please upload an image of the found item.</p><a href="/found" class="btn primary">Go Back</a></div>`
+      });
+    }
+
+    const imageUrl = '/uploads/' + req.file.filename;
+
     const item = {
       status: 'found',
       itemName,
@@ -97,7 +118,8 @@ async function postReportFound(req, res, next) {
       contactName: contactName || '',
       contactEmail,
       keeperInfo: keeperInfo || 'University office/staff',
-      resolved: false
+      resolved: false,
+      imageUrl
     };
 
     await addItem(item);

@@ -106,39 +106,8 @@ function enhanceCardInteractions() {
   });
 }
 
-// Copy email functionality
-function addEmailCopyFeature() {
-  const emailElements = document.querySelectorAll('[data-email]');
-  
-  emailElements.forEach(element => {
-    element.addEventListener('click', async function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const email = this.getAttribute('data-email');
-      
-      try {
-        await navigator.clipboard.writeText(email);
-        
-        const originalText = this.textContent;
-        this.textContent = '✅ Email Copied!';
-        this.style.color = 'var(--success)';
-        
-        setTimeout(() => {
-          this.textContent = originalText;
-          this.style.color = '';
-        }, 2000);
-        
-        console.log('📧 Email copied to clipboard:', email);
-      } catch (err) {
-        console.error('❌ Failed to copy email:', err);
-        
-        // Fallback: show email in alert
-        alert(`Email: ${email}`);
-      }
-    });
-  });
-}
+// Email functionality - mailto links are handled natively by the browser
+// No additional JavaScript needed as we're using mailto links directly
 
 // Basic form validation
 function enhanceFormValidation() {
@@ -158,6 +127,41 @@ function enhanceFormValidation() {
   });
 }
 
+// Image preview functionality
+function previewImage(input, previewContainerId) {
+  const previewContainer = document.getElementById(previewContainerId);
+  const previewImg = document.getElementById(previewContainerId === 'previewLost' ? 'previewImgLost' : 'previewImgFound');
+  
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      previewContainer.style.display = 'block';
+    };
+    
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewContainer.style.display = 'none';
+  }
+}
+
+function clearPreview(inputId, previewContainerId) {
+  const input = document.getElementById(inputId);
+  const previewContainer = document.getElementById(previewContainerId);
+  
+  if (input) {
+    input.value = '';
+  }
+  if (previewContainer) {
+    previewContainer.style.display = 'none';
+  }
+}
+
+// Make functions globally available
+window.previewImage = previewImage;
+window.clearPreview = clearPreview;
+
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🎯 Initializing Lost & Found features...');
@@ -167,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initBasicSearch();
     addLoadingStates();
     enhanceCardInteractions();
-    addEmailCopyFeature();
     enhanceFormValidation();
     
     console.log('✅ All features initialized successfully!');

@@ -8,6 +8,8 @@ const app = express();
 
 // Serve static files from the "public" folder
 app.use(express.static('public'));
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // View engine: EJS
 app.set('view engine', 'ejs');
@@ -28,8 +30,8 @@ mongoose.connect(MONGO_URI).then(() => {
 });
 
 // Routes
-const itemRoutes = require('./routes/itemRoutes');
-const authRoutes = require('./routes/authRoutes');
+const itemRoutes = require('./views/routes/itemRoutes');
+const authRoutes = require('./views/routes/authRoutes');
 app.use('/', itemRoutes);
 app.use('/auth', authRoutes);
 
@@ -94,4 +96,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(` Lost & Found running at http://localhost:${PORT}`);
 });
-

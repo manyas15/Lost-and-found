@@ -629,6 +629,23 @@ section h2::after {
   accent-color: var(--primary);
 }
 
+/* File input styling */
+.form input[type="file"] {
+  cursor: pointer;
+}
+
+.form input[type="file"]:hover {
+  border-color: var(--primary);
+  background: var(--bg-secondary);
+}
+
+.form input[type="file"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-secondary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
 .alert {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.35);
@@ -743,6 +760,15 @@ section h2::after {
   
   .search {
     flex-direction: column;
+  }
+  
+  .detail {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .detail > div:first-child {
+    position: relative !important;
+    top: auto !important;
   }
 }
 

@@ -1,20 +1,64 @@
+<%
+  // If item status is 'found', the person clicking is claiming it (they lost it)
+  // If item status is 'lost', the person clicking found it
+  const subject = item.status === 'found'
+    ? `Claiming Found Item: ${item.itemName}`
+    : `Found Your Lost Item: ${item.itemName}`;
+  
+  const body = item.status === 'found'
+    // Template for someone who lost an item emailing someone who found it
+    ? `Dear ${item.contactName || 'Sir/Madam'},
+
+I hope this message finds you well. I am writing to inform you that I believe the item you reported as found (${item.itemName}) belongs to me. I had lost this item around ${item.location || 'the location mentioned'} on ${item.date || 'the date mentioned'}.
+
+I would be grateful if you could arrange to return it to me tomorrow morning. I can provide any necessary identification or proof of ownership to verify that this item is indeed mine.
+
+Please let me know a convenient time and location where we can meet, and I will make sure to be there promptly.
+
+Thank you for your understanding and assistance.
+
+Best regards,
+[Your Name]
+[Your Contact Information]`
+    // Template for someone who found an item emailing someone who lost it
+    : `Dear ${item.contactName || 'Sir/Madam'},
+
+I hope this message finds you well. I am pleased to inform you that I have found an item that matches the description of your lost item (${item.itemName}).
+
+I would be happy to return it to you tomorrow morning. Please let me know a convenient time and location where we can meet, and I will bring the item with me.
+
+To ensure I am returning it to the rightful owner, I may ask for some identification or verification details.
+
+Looking forward to helping you recover your lost item.
+
+Best regards,
+[Your Name]
+[Your Contact Information]`;
+%>
 <% const content = `
 <section class="container">
   <a class="muted" href="/items" style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; color: var(--primary); text-decoration: none;">
     ← Back to list
   </a>
   
-  <div class="detail">
-    <div class="placeholder lg">
-      📦 Item Image
+  <div class="detail" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+    <div style="position: sticky; top: 2rem;">
+      <img src="${item.imageUrl}" alt="${item.itemName}" style="width: 100%; height: auto; border-radius: 0.75rem; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"/>
     </div>
     
     <div class="info">
-      <span class="badge ${item.status}">${item.status.toUpperCase()}</span>
-      <h1>${item.itemName}</h1>
-      <p style="font-size: 1.1rem; line-height: 1.6; margin: 1rem 0;">
-        ${item.description || 'No description provided.'}
-      </p>
+      <div style="margin-bottom: 1rem;">
+        <span class="badge ${item.status}">${item.status.toUpperCase()}</span>
+      </div>
+      <h1 style="margin-bottom: 1rem;">${item.itemName}</h1>
+      ${item.description ? `
+        <div style="background: var(--bg-tertiary); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
+          <h3 style="color: var(--primary); margin-bottom: 0.75rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">Description</h3>
+          <p style="font-size: 1rem; line-height: 1.7; color: var(--text-primary); margin: 0;">
+            ${item.description}
+          </p>
+        </div>
+      ` : ''}
       
       <div style="background: var(--bg-tertiary); padding: 1.5rem; border-radius: 0.75rem; margin: 1.5rem 0;">
         <h3 style="color: var(--primary); margin-bottom: 1rem;">📍 Item Details</h3>
@@ -55,21 +99,18 @@
         </p>
         <p style="margin: 0.5rem 0;">
           <strong>Email:</strong>
-          <a href="mailto:${item.contactEmail}"
-             style="color: white; text-decoration: underline; font-weight: 500;">
-            ${item.contactEmail}
-          </a>
+          <span style="color: white; font-weight: 500;">${item.contactEmail}</span>
         </p>
         <p style="font-size: 0.9rem; opacity: 0.9; margin-top: 1rem;">
-          💡 Click the email to open your default email client and compose a message
+          💡 Click "Send Email" button below to send a message directly
         </p>
       </div>
       
       <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
-        <a href="mailto:${item.contactEmail}?subject=Regarding ${item.status} item: ${item.itemName}" 
-           class="btn primary sparkle">
+        <button onclick="openEmailModal('${item.contactEmail}', '${encodeURIComponent(subject)}', '${encodeURIComponent(body)}', '${item.itemName}', '${item.status}')" 
+                class="btn primary sparkle">
           📧 Send Email
-        </a>
+        </button>
         ${item.status === 'found' ? `
           <a href="/report" class="btn secondary">🔍 Report Similar Lost Item</a>
         ` : `
@@ -79,5 +120,139 @@
     </div>
   </div>
 </section>
+
+<!-- Email Modal -->
+<div id="emailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+  <div style="background: var(--bg-primary); border-radius: 1rem; padding: 2rem; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h2 style="margin: 0; color: var(--text-primary);">📧 Send Email</h2>
+      <button onclick="closeEmailModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); padding: 0.25rem 0.5rem;">&times;</button>
+    </div>
+    <form id="emailForm" onsubmit="sendEmailForm(event)">
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary);">To:</label>
+        <input type="email" id="emailTo" readonly style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-light); border-radius: 0.5rem; background: var(--bg-tertiary); color: var(--text-primary);"/>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary);">Subject:</label>
+        <input type="text" id="emailSubject" readonly style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-light); border-radius: 0.5rem; background: var(--bg-tertiary); color: var(--text-primary);"/>
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary);">Message:</label>
+        <textarea id="emailBody" rows="12" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-light); border-radius: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+      </div>
+      <div id="emailMessage" style="margin-bottom: 1rem; display: none;"></div>
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button type="button" onclick="closeEmailModal()" class="btn secondary">Cancel</button>
+        <button type="submit" class="btn primary" id="emailSubmitBtn">📧 Send Email</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEmailModal(to, subject, body, itemName, itemStatus) {
+  const modal = document.getElementById('emailModal');
+  const toInput = document.getElementById('emailTo');
+  const subjectInput = document.getElementById('emailSubject');
+  const bodyInput = document.getElementById('emailBody');
+  const messageDiv = document.getElementById('emailMessage');
+  
+  toInput.value = decodeURIComponent(to);
+  subjectInput.value = decodeURIComponent(subject);
+  bodyInput.value = decodeURIComponent(body);
+  messageDiv.style.display = 'none';
+  messageDiv.innerHTML = '';
+  
+  modal.style.display = 'flex';
+  bodyInput.focus();
+  
+  // Store item info for form submission
+  modal.dataset.itemName = itemName;
+  modal.dataset.itemStatus = itemStatus;
+}
+
+function closeEmailModal() {
+  document.getElementById('emailModal').style.display = 'none';
+  document.getElementById('emailForm').reset();
+  document.getElementById('emailMessage').style.display = 'none';
+}
+
+async function sendEmailForm(event) {
+  event.preventDefault();
+  
+  const modal = document.getElementById('emailModal');
+  const toInput = document.getElementById('emailTo');
+  const subjectInput = document.getElementById('emailSubject');
+  const bodyInput = document.getElementById('emailBody');
+  const messageDiv = document.getElementById('emailMessage');
+  const submitBtn = document.getElementById('emailSubmitBtn');
+  
+  const emailData = {
+    to: toInput.value,
+    subject: subjectInput.value,
+    body: bodyInput.value,
+    itemName: modal.dataset.itemName || '',
+    itemStatus: modal.dataset.itemStatus || ''
+  };
+  
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+  messageDiv.style.display = 'none';
+  
+  try {
+    const response = await fetch('/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      messageDiv.style.display = 'block';
+      messageDiv.style.background = 'rgba(32, 191, 107, 0.15)';
+      messageDiv.style.border = '1px solid rgba(32, 191, 107, 0.35)';
+      messageDiv.style.color = '#20bf6b';
+      messageDiv.style.padding = '0.75rem 1rem';
+      messageDiv.style.borderRadius = '0.5rem';
+      messageDiv.innerHTML = '✅ ' + (result.message || 'Email sent successfully!');
+      
+      setTimeout(() => {
+        closeEmailModal();
+      }, 2000);
+    } else {
+      messageDiv.style.display = 'block';
+      messageDiv.style.background = 'rgba(235, 77, 75, 0.15)';
+      messageDiv.style.border = '1px solid rgba(235, 77, 75, 0.35)';
+      messageDiv.style.color = '#eb4d4b';
+      messageDiv.style.padding = '0.75rem 1rem';
+      messageDiv.style.borderRadius = '0.5rem';
+      messageDiv.innerHTML = '❌ ' + (result.message || 'Failed to send email. Please try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = '📧 Send Email';
+    }
+  } catch (error) {
+    messageDiv.style.display = 'block';
+    messageDiv.style.background = 'rgba(235, 77, 75, 0.15)';
+    messageDiv.style.border = '1px solid rgba(235, 77, 75, 0.35)';
+    messageDiv.style.color = '#eb4d4b';
+    messageDiv.style.padding = '0.75rem 1rem';
+    messageDiv.style.borderRadius = '0.5rem';
+    messageDiv.innerHTML = '❌ Network error. Please check your connection and try again.';
+    submitBtn.disabled = false;
+    submitBtn.textContent = '📧 Send Email';
+  }
+}
+
+// Close modal when clicking outside
+document.getElementById('emailModal')?.addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeEmailModal();
+  }
+});
+</script>
 ` %>
 <%- include('partials/layout', { title, content }) %>

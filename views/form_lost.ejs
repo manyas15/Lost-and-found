@@ -1,7 +1,7 @@
 <% const content = `
 <section class="container">
   <h1>Report Lost Item</h1>
-  <form class="form" method="post" action="/report">
+  <form class="form" method="post" action="/report" enctype="multipart/form-data">
     <div class="row">
       <label>Item Name* <input name="itemName" required/></label>
       <label>Category <input name="category" placeholder="e.g., Electronics, ID Card"/></label>
@@ -10,6 +10,26 @@
     <div class="row">
       <label>Location Lost* <input name="location" required placeholder="Where did you lose it?"/></label>
       <label>Date Lost* <input type="date" name="dateLost" required/></label>
+    </div>
+    
+    <div style="background: var(--bg-tertiary); padding: 1.5rem; border-radius: 0.75rem; border: 2px dashed var(--border-medium);">
+      <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; color: var(--text-primary);">
+        📷 Item Image*
+      </label>
+      <input type="file" 
+             name="itemImage" 
+             id="itemImageLost" 
+             accept="image/*" 
+             required
+             style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-light); border-radius: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; transition: all 0.2s ease;"
+             onchange="previewImage(this, 'previewLost')"/>
+      <small style="display: block; color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.5rem;">
+        Upload an image of the lost item (required, max 5MB, formats: JPG, PNG, GIF, WEBP)
+      </small>
+      <div id="previewLost" style="margin-top: 1rem; display: none;">
+        <img id="previewImgLost" src="" alt="Preview" style="max-width: 100%; max-height: 300px; border-radius: 0.5rem; border: 2px solid var(--border-light); object-fit: contain; background: var(--bg-secondary);"/>
+        <button type="button" onclick="clearPreview('itemImageLost', 'previewLost')" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger); color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">Remove Image</button>
+      </div>
     </div>
     
     <div class="row">

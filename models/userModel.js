@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
-  password: { type: String, required: true, minlength: 6 }
+  password: { type: String, required: true, minlength: 6 },
+  // Email/OTP verification
+  isVerified: { type: Boolean, default: false },
+  otpCode: { type: String, default: null },
+  otpExpires: { type: Date, default: null }
 }, { timestamps: true });
 
 userSchema.pre('save', async function hashPassword(next) {

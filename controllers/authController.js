@@ -1,6 +1,63 @@
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const User = require('../models/userModel');
 const { JWT_SECRET } = require('../middleware/authMiddleware');
+
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+}
+
+function createTransport() {
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT || 587);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  if (!host || !user || !pass) {
+    console.warn('SMTP not configured. Set SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS');
+  }
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: false,
+    auth: { user, pass }
+  });
+}
+
+async function sendOtpMail(to, code) {
+  const transporter = createTransport();
+  const from = process.env.SMTP_USER || 'no-reply@example.com';
+  const appName = 'Lost & Found';
+  const subject = `${appName} Verification Code`;
+  const text = `Your ${appName} verification code is: ${code}. It expires in 10 minutes.`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height:1.6;">
+      <h2>${appName} Verification</h2>
+      <p>Your verification code is:</p>
+      <div style="font-size: 24px; font-weight: bold; letter-spacing: 4px;">${code}</div>
+      <p>This code expires in <strong>10 minutes</strong>.</p>
+    </div>
+  `;
+  try {
+    await transporter.sendMail({ from, to, subject, text, html });
+  } catch (e) {
+    // In development, fall back to console logging so flow can continue
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Email send failed, logging OTP to console for dev:', e.message);
+      console.warn(`OTP for ${to}: ${code}`);
+      return;
+    }
+    console.error('Failed to send OTP email:', e);
+    throw new Error('Email send failed');
+  }
+}
+
+async function startOtpFlow(user) {
+  const code = generateOtp();
+  user.otpCode = code;
+  user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+  await user.save();
+  await sendOtpMail(user.email, code);
+}
 
 function signToken(user) {
   return jwt.sign(
@@ -66,7 +123,6 @@ async function signup(req, res) {
       next: nextUrl || ''
     });
   }
-
   try {
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
@@ -78,15 +134,15 @@ async function signup(req, res) {
       });
     }
 
-    const user = await User.create({ name, email, password });
-    const token = signToken(user);
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+    const user = await User.create({ name, email, password, isVerified: false });
+    await startOtpFlow(user);
+    return res.render('auth_otp', {
+      title: 'Verify Your Email',
+      error: null,
+      form: { email },
+      next: nextUrl || '',
+      info: 'We sent a 6-digit code to your email. Enter it below.'
     });
-    res.redirect(resolveRedirect(nextUrl));
   } catch (err) {
     console.error('Signup error', err);
     res.status(500).render('auth_signup', {
@@ -128,14 +184,14 @@ async function login(req, res) {
         next: nextUrl || ''
       });
     }
-    const token = signToken(user);
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+    await startOtpFlow(user);
+    return res.render('auth_otp', {
+      title: 'Verify Login',
+      error: null,
+      form: { email },
+      next: nextUrl || '',
+      info: 'Enter the 6-digit code sent to your email to finish login.'
     });
-    res.redirect(resolveRedirect(nextUrl));
   } catch (err) {
     console.error('Login error', err);
     res.status(500).render('auth_login', {
@@ -152,11 +208,78 @@ function logout(req, res) {
   res.redirect('/');
 }
 
+async function renderOtp(req, res) {
+  const { email, next: nextUrl } = req.query;
+  return res.render('auth_otp', {
+    title: 'Verify Code',
+    error: null,
+    form: { email },
+    next: nextUrl || '',
+    info: 'We sent a 6-digit code to your email.'
+  });
+}
+
+async function verifyOtp(req, res) {
+  const { email, code, next: nextUrl } = req.body;
+  if (!email || !code) {
+    return res.status(400).render('auth_otp', {
+      title: 'Verify Code',
+      error: 'Please enter the code sent to your email.',
+      form: { email },
+      next: nextUrl || ''
+    });
+  }
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user || !user.otpCode || !user.otpExpires) {
+      return res.status(400).render('auth_otp', {
+        title: 'Verify Code',
+        error: 'No active verification for this email. Please login or signup again.',
+        form: { email },
+        next: nextUrl || ''
+      });
+    }
+    const now = new Date();
+    if (now > user.otpExpires || code !== user.otpCode) {
+      return res.status(400).render('auth_otp', {
+        title: 'Verify Code',
+        error: 'Invalid or expired code. Please try again.',
+        form: { email },
+        next: nextUrl || ''
+      });
+    }
+    // Clear OTP, mark verified, sign in
+    user.otpCode = null;
+    user.otpExpires = null;
+    if (!user.isVerified) user.isVerified = true;
+    await user.save();
+
+    const token = signToken(user);
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+    return res.redirect(resolveRedirect(nextUrl));
+  } catch (e) {
+    console.error('OTP verify error', e);
+    return res.status(500).render('auth_otp', {
+      title: 'Verify Code',
+      error: 'Something went wrong. Please try again.',
+      form: { email },
+      next: nextUrl || ''
+    });
+  }
+}
+
 module.exports = {
   renderSignup,
   renderLogin,
   signup,
   login,
-  logout
+  logout,
+  renderOtp,
+  verifyOtp
 };
 
